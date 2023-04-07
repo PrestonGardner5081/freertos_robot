@@ -5,8 +5,8 @@
 
 
 void led_task()
-{   
-    const uint LED_PIN = PICO_DEFAULT_LED_PIN;
+{
+    const uint LED_PIN = 0;
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
     while (true) {
