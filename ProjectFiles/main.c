@@ -9,6 +9,8 @@
 // needed for packet handling
 #include "btstack_event.h"
 
+char* bt_addr;
+
 /*
     Experimental BT stuff start 
 */
@@ -22,7 +24,8 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
         case BTSTACK_EVENT_STATE:
             if (btstack_event_state_get_state(packet) != HCI_STATE_WORKING) return;
             gap_local_bd_addr(local_addr);
-            printf("BTstack up and running on %s.\n", bd_addr_to_str(local_addr));
+            bt_addr = bd_addr_to_str(local_addr);
+            printf("BTstack up and running on %s.\n", bt_addr);
             break;
         default:
             break;
@@ -68,6 +71,7 @@ void input_task(){
 
     while (true) {
         printf("input task running \n");
+        printf("BTstack up and running on %s.\n", bt_addr);
         gpio_put(LED_PIN, 1);
         vTaskDelay(250);
         gpio_put(LED_PIN, 0);
@@ -79,6 +83,12 @@ int main()
 {
     stdio_init_all();
     picow_bt_init();
+
+    hci_event_callback_registration.callback = &packet_handler;
+    hci_add_event_handler(&hci_event_callback_registration);
+
+    // turn on host controller interface / bluetooth
+    hci_power_control(HCI_POWER_ON);
 
     xTaskCreate(led_task, "LED_Task", 256, NULL, 1, NULL);
     xTaskCreate(input_task, "Input_Task", 256, NULL, 1, NULL);
