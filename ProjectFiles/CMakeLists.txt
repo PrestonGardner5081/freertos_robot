@@ -1,8 +1,9 @@
-add_executable(blink
+add_executable(rtos_rc
         main.c
+        pico_bt_connection.c
 )
 
-target_link_libraries(blink 
+target_link_libraries(rtos_rc 
         pico_stdlib 
         freertos     
         pico_cyw43_arch_none
@@ -10,11 +11,11 @@ target_link_libraries(blink
         pico_btstack_classic
         pico_btstack_cyw43
 )
-target_include_directories(blink PRIVATE
+target_include_directories(rtos_rc PRIVATE
     ${CMAKE_CURRENT_LIST_DIR} # For btstack config
 )
 
-pico_add_extra_outputs(blink)
+pico_add_extra_outputs(rtos_rc)
 
-pico_enable_stdio_usb(blink 1)
-pico_enable_stdio_uart(blink 0)
+pico_enable_stdio_usb(rtos_rc 1)
+pico_enable_stdio_uart(rtos_rc 0)
