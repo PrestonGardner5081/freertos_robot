@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "btstack_event.h": "c",
+        "stdio.h": "c",
+        "pico_bt_connection.h": "c",
+        "inttypes.h": "c"
+    }
+}
