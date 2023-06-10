@@ -10,6 +10,7 @@ target_link_libraries(rtos_rc
         pico_btstack_ble
         pico_btstack_classic
         pico_btstack_cyw43
+        hardware_pwm
 )
 target_include_directories(rtos_rc PRIVATE
     ${CMAKE_CURRENT_LIST_DIR} # For btstack config
