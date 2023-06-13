@@ -182,24 +182,24 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
                     case 'w':
                         if(pressed){
                             commandState.w = true;
-                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "w pressed");
+                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "w pressed\n");
                             rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
                         }
                         if(released){
                             commandState.w = false;
-                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "w released");
+                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "w released\n");
                             rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
                         }  
                         break;
                     case 'a':
                         if(pressed){
                             commandState.a = true;
-                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "a pressed");
+                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "a pressed\n");
                             rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
                         }
                         if(released){
                             commandState.a = false;
-                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "a released");
+                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "a released\n");
                             rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
                         }  
                         break;
@@ -231,7 +231,11 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
                     default:
                         break;
                 }
+
             }
+
+            snprintf(lineBuffer, sizeof(lineBuffer), "%s", packet_str);
+            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
 
             break;
 
