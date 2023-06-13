@@ -10,6 +10,7 @@ static uint8_t  spp_service_buffer[150];
 static btstack_packet_callback_registration_t hci_event_callback_registration;
 static char lineBuffer[30];
 
+struct CommandState commandState = {false,false,false,false};
 
 /* @section SPP Service Setup 
  *s
@@ -57,6 +58,9 @@ void spp_service_setup(void){
     hci_power_control(HCI_POWER_ON);
 }
 
+struct CommandState bt_connection_get_internal_command_state(){
+    return commandState;
+}
 
 /* @section Bluetooth Logic 
  * @text The Bluetooth logic is implemented within the 
@@ -158,6 +162,7 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
 
         case RFCOMM_DATA_PACKET:
             printf("RCV: '");
+
             // print to stdout
             for (i=0;i<size;i++){
                 packet_str[i] = (char)packet[i];
@@ -165,9 +170,68 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
             packet_str[size + 1] = '\0';
             printf("%s'\n", packet_str);
 
-            // print / send over bluetooth
-            snprintf(lineBuffer, sizeof(lineBuffer), "%s\n", packet_str);
-            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer));  
+            bool pressed = false;
+            bool released = false;
+
+            if(size > 1){
+                pressed = packet_str[1] == 'p';
+                released = packet_str[1] == 'r';
+
+                switch (packet_str[0])
+                {
+                    case 'w':
+                        if(pressed){
+                            commandState.w = true;
+                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "w pressed");
+                            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
+                        }
+                        if(released){
+                            commandState.w = false;
+                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "w released");
+                            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
+                        }  
+                        break;
+                    case 'a':
+                        if(pressed){
+                            commandState.a = true;
+                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "a pressed");
+                            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
+                        }
+                        if(released){
+                            commandState.a = false;
+                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "a released");
+                            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
+                        }  
+                        break;
+                    case 's':
+                        if(pressed){
+                            commandState.s = true;
+                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "s pressed");
+                            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
+                        }
+                        if(released){
+                            commandState.s = false;
+                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "s released");
+                            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
+                        }  
+                        break;
+                    case 'd':
+                        if(pressed){
+                            commandState.d = false;
+                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "d pressed");
+                            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
+                        }
+                        if(released){
+                            commandState.d = true;
+                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "s released");
+                            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
+                        }  
+                        break;
+                    
+                    default:
+                        break;
+                }
+            }
 
             break;
 

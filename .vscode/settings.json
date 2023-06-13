@@ -3,6 +3,8 @@
         "btstack_event.h": "c",
         "stdio.h": "c",
         "pico_bt_connection.h": "c",
-        "inttypes.h": "c"
+        "inttypes.h": "c",
+        "time.h": "c",
+        "cyw43_arch.h": "c"
     }
 }

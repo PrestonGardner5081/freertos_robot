@@ -6,6 +6,9 @@
 #include "pico/cyw43_arch.h"
 #include "pico_bt_connection.h"
 #include "hardware/pwm.h"
+#include "time.h"
+
+const uint32_t COMMAND_POLE_INTERVAL = 1000; // Pole for commands every 1000 us = 0.001 s
 
 int picow_bt_init(void) {
     // initialize CYW43 driver architecture (will enable BT if/because CYW43_ENABLE_BLUETOOTH == 1)
@@ -35,6 +38,23 @@ void led_task()
 void pwm_setup(int *pins, int num_pins){
     for(int i = 0; i < num_pins; i++){
         gpio_set_function(pins[i], GPIO_FUNC_PWM);
+    }
+}
+
+void process_input_task(){
+    uint32_t start_time, stop_time, remaining_time;
+
+    while(true){
+        start_time = time_us_32();
+        
+        struct CommandState cur_state = bt_connection_get_internal_command_state();
+
+        
+
+        stop_time = time_us_64();
+        remaining_time = COMMAND_POLE_INTERVAL - stop_time + start_time;
+        if (remaining_time > 0)
+            usleep(remaining_time); //sleep for remaining portion of 10ms
     }
 }
 
