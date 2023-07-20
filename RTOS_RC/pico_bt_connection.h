@@ -12,3 +12,5 @@ struct CommandState bt_connection_get_internal_command_state();
 
 void spp_service_setup(void);
 
+void bt_string_transmit(char* send_str);
+

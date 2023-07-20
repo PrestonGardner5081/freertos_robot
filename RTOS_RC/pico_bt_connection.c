@@ -101,7 +101,10 @@ struct CommandState bt_connection_get_internal_command_state(){
 
  */ 
 
-
+void bt_string_transmit(char* send_str){
+    snprintf(lineBuffer, sizeof(lineBuffer), "%s", send_str);
+    rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer));
+}
 
 /* LISTING_START(SppServerPacketHandler): SPP Server - 2 Way RFCOMM */
 static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size){
@@ -182,49 +185,43 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
                     case 'w':
                         if(pressed){
                             commandState.w = true;
-                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "w pressed\n");
-                            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
+                            bt_string_transmit("w pressed\n");
                         }
                         if(released){
                             commandState.w = false;
-                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "w released\n");
-                            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
+                            bt_string_transmit("w released\n");
                         }  
                         break;
                     case 'a':
                         if(pressed){
                             commandState.a = true;
-                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "a pressed\n");
-                            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
+                            bt_string_transmit("a pressed\n");
+                            // snprintf(lineBuffer, sizeof(lineBuffer), "%s", "a pressed\n");
+                            // rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
                         }
                         if(released){
                             commandState.a = false;
-                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "a released\n");
-                            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
+                            bt_string_transmit("a released\n");
                         }  
                         break;
                     case 's':
                         if(pressed){
                             commandState.s = true;
-                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "s pressed");
-                            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
+                            bt_string_transmit("s pressed\n");
                         }
                         if(released){
                             commandState.s = false;
-                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "s released");
-                            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
+                            bt_string_transmit("s released\n");
                         }  
                         break;
                     case 'd':
                         if(pressed){
                             commandState.d = false;
-                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "d pressed");
-                            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
+                            bt_string_transmit("d pressed\n");
                         }
                         if(released){
                             commandState.d = true;
-                            snprintf(lineBuffer, sizeof(lineBuffer), "%s", "s released");
-                            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
+                            bt_string_transmit("d released\n");
                         }  
                         break;
                     
@@ -245,3 +242,5 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
 /* LISTING_RESUME */ 
 }
 /* LISTING_END */
+
+

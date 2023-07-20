@@ -78,6 +78,8 @@ void process_input_task(){
         struct CommandState cur_state = bt_connection_get_internal_command_state();
 
         if(cur_state.w){
+
+            //set direction to forward
             gpio_put(motor_driver_BI1, 1);
             gpio_put(motor_driver_BI2, 0);        
             gpio_put(motor_driver_AI1, 1);
