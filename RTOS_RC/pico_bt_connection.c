@@ -196,8 +196,6 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
                         if(pressed){
                             commandState.a = true;
                             bt_string_transmit("a pressed\n");
-                            // snprintf(lineBuffer, sizeof(lineBuffer), "%s", "a pressed\n");
-                            // rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
                         }
                         if(released){
                             commandState.a = false;

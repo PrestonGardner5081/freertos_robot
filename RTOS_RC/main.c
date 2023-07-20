@@ -85,18 +85,21 @@ void process_input_task(){
             gpio_put(motor_driver_AI1, 1);
             gpio_put(motor_driver_AI2, 0);
 
-            // Fade up from 0 -> 100 percent 
-            for(int i = max_pwm / 2; i < max_pwm; i++){
-                pwm_set_gpio_level(motor_driver_pin_B, i);
-                pwm_set_gpio_level(motor_driver_pin_A, i);
-            }      
+
+
+            pwm_set_gpio_level(motor_driver_pin_B, max_pwm);
+            pwm_set_gpio_level(motor_driver_pin_A, max_pwm);
+    
         }
         else{
+
             // Fade up from 100 -> 0 percent 
-            for(int i = max_pwm - 1; i >= max_pwm / 2; i--){
-                pwm_set_gpio_level(motor_driver_pin_B, i);
-                pwm_set_gpio_level(motor_driver_pin_A, i); 
-            }
+            // for(int i = max_pwm - 1; i >= max_pwm / 2; i--){
+            //     pwm_set_gpio_level(motor_driver_pin_B, i);
+            //     pwm_set_gpio_level(motor_driver_pin_A, i); 
+            // }
+            pwm_set_gpio_level(motor_driver_pin_B, 0);
+            pwm_set_gpio_level(motor_driver_pin_A, 0);
         }
 
         // stop_time = time_us_32();
