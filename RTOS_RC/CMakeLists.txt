@@ -18,5 +18,5 @@ target_include_directories(rtos_rc PRIVATE
 
 pico_add_extra_outputs(rtos_rc)
 
-pico_enable_stdio_usb(rtos_rc 1)
-pico_enable_stdio_uart(rtos_rc 0)
+pico_enable_stdio_usb(rtos_rc 0)
+pico_enable_stdio_uart(rtos_rc 1)

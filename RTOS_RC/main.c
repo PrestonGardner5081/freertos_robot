@@ -77,7 +77,7 @@ void process_input_task(){
         
         struct CommandState cur_state = bt_connection_get_internal_command_state();
 
-        if(cur_state.w){
+        if(cur_state.yPercent > 0){
 
             //set direction to forward
             gpio_put(motor_driver_BI1, 1);
@@ -85,28 +85,17 @@ void process_input_task(){
             gpio_put(motor_driver_AI1, 1);
             gpio_put(motor_driver_AI2, 0);
 
-
-
-            pwm_set_gpio_level(motor_driver_pin_B, max_pwm);
-            pwm_set_gpio_level(motor_driver_pin_A, max_pwm);
+            pwm_set_gpio_level(motor_driver_pin_B, max_pwm * cur_state.yPercent / 100);
+            pwm_set_gpio_level(motor_driver_pin_A, max_pwm * cur_state.yPercent / 100);
     
         }
         else{
-
-            // Fade up from 100 -> 0 percent 
-            // for(int i = max_pwm - 1; i >= max_pwm / 2; i--){
-            //     pwm_set_gpio_level(motor_driver_pin_B, i);
-            //     pwm_set_gpio_level(motor_driver_pin_A, i); 
-            // }
+            //set power level to 0; stop motors
             pwm_set_gpio_level(motor_driver_pin_B, 0);
             pwm_set_gpio_level(motor_driver_pin_A, 0);
         }
 
-        // stop_time = time_us_32();
-        // remaining_time = COMMAND_POLE_INTERVAL - stop_time + start_time;
-        // if (remaining_time > 0)
-        //     sleep_us(remaining_time); //sleep for remaining portion of 1ms
-        sleep_us(10);
+        sleep_us(1000); //1 ms; polling may not be the best solution, perhaps interrupt based?
     }
 }
 

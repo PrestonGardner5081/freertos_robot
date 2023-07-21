@@ -2,10 +2,8 @@
 #define HEARTBEAT_PERIOD_MS 1000
 
 typedef struct CommandState{
-    bool w;
-    bool a;
-    bool s;
-    bool d;
+    uint16_t xPercent;
+    uint16_t yPercent;
 };
 
 struct CommandState bt_connection_get_internal_command_state();

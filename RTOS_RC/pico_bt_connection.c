@@ -8,9 +8,8 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
 static uint16_t rfcomm_channel_id;
 static uint8_t  spp_service_buffer[150];
 static btstack_packet_callback_registration_t hci_event_callback_registration;
-static char lineBuffer[30];
 
-struct CommandState commandState = {false,false,false,false};
+struct CommandState commandState = {0,0};
 
 /* @section SPP Service Setup 
  *s
@@ -102,8 +101,19 @@ struct CommandState bt_connection_get_internal_command_state(){
  */ 
 
 void bt_string_transmit(char* send_str){
-    snprintf(lineBuffer, sizeof(lineBuffer), "%s", send_str);
-    rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer));
+    // snprintf(lineBuffer, sizeof(lineBuffer), "%s", send_str);
+    rfcomm_send(rfcomm_channel_id, (uint8_t*) send_str, (uint16_t) strlen(send_str));
+}
+
+/*
+* parse xbox controller data from bt connection
+*/ 
+void parse_bt_data(uint8_t* packet, uint16_t size){
+    //for now hope that data is correctly formatted
+    if(size > 0)
+        commandState.yPercent = packet[0];
+    if(size > 1)
+        commandState.xPercent = packet[1];
 }
 
 /* LISTING_START(SppServerPacketHandler): SPP Server - 2 Way RFCOMM */
@@ -155,7 +165,12 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
 /* LISTING_PAUSE */                 
                 case RFCOMM_EVENT_CHANNEL_CLOSED:
                     printf("RFCOMM channel closed\n");
-                    rfcomm_channel_id = 0;
+                    rfcomm_channel_id = 0; // is it possible to reopen connection? possibly indicate connection closed 
+                    
+                    // if connection is lost, make sure to stop motors; need more robust solution to prevent damage
+                    commandState.xPercent = 0;
+                    commandState.yPercent = 0;
+                    
                     break;
                 
                 default:
@@ -164,74 +179,15 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
             break;
 
         case RFCOMM_DATA_PACKET:
-            printf("RCV: '");
+            parse_bt_data(packet, size);
 
-            // print to stdout
-            for (i=0;i<size;i++){
-                packet_str[i] = (char)packet[i];
-            }
-            packet_str[size + 1] = '\0';
-            printf("%s'\n", packet_str);
+            uint8_t values[] = {(uint8_t)commandState.yPercent, (uint8_t)commandState.xPercent};
 
-            bool pressed = false;
-            bool released = false;
+            rfcomm_send(rfcomm_channel_id, values, 2); // verify x and y percents are reasonable
 
-            if(size > 1){
-                pressed = packet_str[1] == 'p';
-                released = packet_str[1] == 'r';
-
-                switch (packet_str[0])
-                {
-                    case 'w':
-                        if(pressed){
-                            commandState.w = true;
-                            bt_string_transmit("w pressed\n");
-                        }
-                        if(released){
-                            commandState.w = false;
-                            bt_string_transmit("w released\n");
-                        }  
-                        break;
-                    case 'a':
-                        if(pressed){
-                            commandState.a = true;
-                            bt_string_transmit("a pressed\n");
-                        }
-                        if(released){
-                            commandState.a = false;
-                            bt_string_transmit("a released\n");
-                        }  
-                        break;
-                    case 's':
-                        if(pressed){
-                            commandState.s = true;
-                            bt_string_transmit("s pressed\n");
-                        }
-                        if(released){
-                            commandState.s = false;
-                            bt_string_transmit("s released\n");
-                        }  
-                        break;
-                    case 'd':
-                        if(pressed){
-                            commandState.d = false;
-                            bt_string_transmit("d pressed\n");
-                        }
-                        if(released){
-                            commandState.d = true;
-                            bt_string_transmit("d released\n");
-                        }  
-                        break;
-                    
-                    default:
-                        break;
-                }
-
-            }
-
-            snprintf(lineBuffer, sizeof(lineBuffer), "%s", packet_str);
-            rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer)); 
-
+            // char str[1];
+            // sprintf(str, "%u\n", commandState.yPercent);
+            // bt_string_transmit(str); //FIXME
             break;
 
         default:
