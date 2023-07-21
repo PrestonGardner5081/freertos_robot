@@ -6,7 +6,7 @@
 static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size);
 
 static uint16_t rfcomm_channel_id;
-static uint8_t  spp_service_buffer[150];
+static uint8_t  spp_service_buffer[1000]; // size increased to help reduce crashes
 static btstack_packet_callback_registration_t hci_event_callback_registration;
 
 struct CommandState commandState = {0,0};
