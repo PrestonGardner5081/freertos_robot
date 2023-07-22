@@ -110,10 +110,14 @@ void bt_string_transmit(char* send_str){
 */ 
 void parse_bt_data(uint8_t* packet, uint16_t size){
     //for now hope that data is correctly formatted
-    if(size > 0)
-        commandState.yPercent = packet[0];
-    if(size > 1)
-        commandState.xPercent = packet[1];
+    if(size > 0){
+        commandState.yPercent = packet[0] & 127; // mask out first bit which is used for determining direction
+        commandState.yIsNegative = (packet[0] & 128) >> 7; // isolate first first bit to determine direction / sign
+    }
+    if(size > 1){
+        commandState.xPercent = packet[1] & 127; // mask out first bit which is used for determining direction
+        commandState.xIsNegative = (packet[1] & 128) >> 7; // isolate first first bit to determine direction / sign
+    }
 }
 
 /* LISTING_START(SppServerPacketHandler): SPP Server - 2 Way RFCOMM */

@@ -4,6 +4,8 @@
 typedef struct CommandState{
     uint16_t xPercent;
     uint16_t yPercent;
+    bool xIsNegative;
+    bool yIsNegative;
 };
 
 struct CommandState bt_connection_get_internal_command_state();

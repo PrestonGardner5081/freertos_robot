@@ -79,12 +79,21 @@ void process_input_task(){
 
         if(cur_state.yPercent > 0){
 
-            //set direction to forward
-            gpio_put(motor_driver_BI1, 1);
-            gpio_put(motor_driver_BI2, 0);        
-            gpio_put(motor_driver_AI1, 1);
-            gpio_put(motor_driver_AI2, 0);
-
+            if (cur_state.yIsNegative){
+                //set direction to backwards
+                gpio_put(motor_driver_BI1, 0);
+                gpio_put(motor_driver_BI2, 1);        
+                gpio_put(motor_driver_AI1, 0);
+                gpio_put(motor_driver_AI2, 1);
+            }
+            else{                
+                //set direction to forward
+                gpio_put(motor_driver_BI1, 1);
+                gpio_put(motor_driver_BI2, 0);        
+                gpio_put(motor_driver_AI1, 1);
+                gpio_put(motor_driver_AI2, 0);
+                
+            }
             pwm_set_gpio_level(motor_driver_pin_B, max_pwm * cur_state.yPercent / 100);
             pwm_set_gpio_level(motor_driver_pin_A, max_pwm * cur_state.yPercent / 100);
     
