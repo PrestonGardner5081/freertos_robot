@@ -30,8 +30,14 @@ void led_task()
     }
 }
 
+float normalized_directional_scaling(uint16_t percent){
+    return 1 - (1 / (1 + exp(-0.12*(percent - 50))));
+}
+
 void process_input_task(){
     uint32_t start_time, stop_time, remaining_time;
+
+    // pin B controls left motors, pin A controls right motors
 
     const uint motor_driver_pin_B = 2;
     const uint motor_driver_pin_A = 28;
@@ -94,9 +100,19 @@ void process_input_task(){
                 gpio_put(motor_driver_AI2, 0);
                 
             }
-            pwm_set_gpio_level(motor_driver_pin_B, max_pwm * cur_state.yPercent / 100);
-            pwm_set_gpio_level(motor_driver_pin_A, max_pwm * cur_state.yPercent / 100);
-    
+
+            if(cur_state.xIsNegative){
+                uint16_t left_scale_factor = 100 - cur_state.xPercent;
+
+                pwm_set_gpio_level(motor_driver_pin_B, max_pwm * ((cur_state.yPercent * left_scale_factor) / 10000));
+                pwm_set_gpio_level(motor_driver_pin_A, max_pwm * cur_state.yPercent / 100);
+            }
+            else{
+                uint16_t right_scale_factor = 100 - cur_state.xPercent;
+
+                pwm_set_gpio_level(motor_driver_pin_B, max_pwm * cur_state.yPercent / 100);
+                pwm_set_gpio_level(motor_driver_pin_A, max_pwm * ((cur_state.yPercent * right_scale_factor) / 10000));
+            }
         }
         else{
             //set power level to 0; stop motors
