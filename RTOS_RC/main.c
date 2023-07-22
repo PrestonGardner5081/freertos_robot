@@ -1,6 +1,7 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include <stdio.h>
+#include <math.h>
 #include "btstack.h"
 #include "pico/stdlib.h"
 #include "pico/cyw43_arch.h"
@@ -101,17 +102,15 @@ void process_input_task(){
                 
             }
 
-            if(cur_state.xIsNegative){
-                uint16_t left_scale_factor = 100 - cur_state.xPercent;
+            float directional_scaling_factor = normalized_directional_scaling(cur_state.xPercent);
 
-                pwm_set_gpio_level(motor_driver_pin_B, max_pwm * ((cur_state.yPercent * left_scale_factor) / 10000));
+            if(cur_state.xIsNegative){
+                pwm_set_gpio_level(motor_driver_pin_B, (uint16_t)(max_pwm * ((cur_state.yPercent * directional_scaling_factor) / 100)));
                 pwm_set_gpio_level(motor_driver_pin_A, max_pwm * cur_state.yPercent / 100);
             }
             else{
-                uint16_t right_scale_factor = 100 - cur_state.xPercent;
-
                 pwm_set_gpio_level(motor_driver_pin_B, max_pwm * cur_state.yPercent / 100);
-                pwm_set_gpio_level(motor_driver_pin_A, max_pwm * ((cur_state.yPercent * right_scale_factor) / 10000));
+                pwm_set_gpio_level(motor_driver_pin_A, (uint16_t)(max_pwm * ((cur_state.yPercent * directional_scaling_factor) / 100)));
             }
         }
         else{
