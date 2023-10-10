@@ -32,7 +32,7 @@ void led_task()
 }
 
 float normalized_directional_scaling(uint16_t percent){
-    return 1 - (1 / (1 + exp(-0.12*(percent - 50))));
+    return 1 - (1 / (1 + exp(-0.1*(percent - 50))));
 }
 
 void process_input_task(){
@@ -106,10 +106,10 @@ void process_input_task(){
 
             if(cur_state.xIsNegative){
                 pwm_set_gpio_level(motor_driver_pin_B, (uint16_t)(max_pwm * ((cur_state.yPercent * directional_scaling_factor) / 100)));
-                pwm_set_gpio_level(motor_driver_pin_A, max_pwm * cur_state.yPercent / 100);
+                pwm_set_gpio_level(motor_driver_pin_A, max_pwm );//* cur_state.yPercent / 100);
             }
             else{
-                pwm_set_gpio_level(motor_driver_pin_B, max_pwm * cur_state.yPercent / 100);
+                pwm_set_gpio_level(motor_driver_pin_B, max_pwm); //* cur_state.yPercent / 100);
                 pwm_set_gpio_level(motor_driver_pin_A, (uint16_t)(max_pwm * ((cur_state.yPercent * directional_scaling_factor) / 100)));
             }
         }
